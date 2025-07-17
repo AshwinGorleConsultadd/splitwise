@@ -6,7 +6,6 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     group = models.ForeignKey('groups.Group', related_name='expenses', on_delete=models.CASCADE)
     description = models.TextField(blank=True)
-    paid_by = models.ForeignKey('auth.User', related_name='expenses', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -16,13 +15,25 @@ class Expense(models.Model):
 class ExpenseShare(models.Model):
     expense = models.ForeignKey(Expense, related_name='shares', on_delete=models.CASCADE)
     user = models.ForeignKey('auth.User', related_name='expense_shares', on_delete=models.CASCADE)
-    owned_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    share_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('expense', 'user')
 
     def _str_ (self):
         return f"{self.user.username} owes {self.owned_amount} for {self.expense.title}"
 
 
-class Dept(models.Model):
+class ExpensePayer(models.Model):
+    expense = models.ForeignKey(Expense, related_name='payers', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', related_name='expense_payers', on_delete=models.CASCADE)
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    class Meta:
+        unique_together = ('expense', 'user')
+    def __str__(self):
+        return f"{self.user.username} paid {self.paid_amount} for {self.expense.title}"
+
+class Debt(models.Model):
     from_member = models.ForeignKey('auth.User', related_name='depts_given', on_delete=models.CASCADE)
     to_member = models.ForeignKey('auth.User', related_name='depts_received', on_delete=models.CASCADE)
     group = models.ForeignKey('groups.Group', related_name='depts', null=True, blank=True, on_delete=models.CASCADE)
