@@ -40,11 +40,28 @@ def validate_expense_request(expense):
     #validate participants
 
 
-#split expense
-# def split_expense(expense):
-#     group = Group.objects.get(id = expense['group'])
-#     memberships = group.membership.all()
-#     member_list = sorted([membership.member for membership in memberships],key = lambda user : user.id)
-#     index_user_map = {}
-#     idx = 0
-#     for member in member_list
+split expense
+def split_expense(expense):
+    group = Group.objects.get(id = expense['group'])
+    memberships = group.membership.all()
+    member_list = sorted([membership.member for membership in memberships],key = lambda user : user.id)
+
+    #createing mapping for index against user
+    user_id_to_idx_map = {}
+    idx = 0
+    for member in member_list:
+        user_id_to_idx_map[member.id] = idx
+        idx = idx+1
+    
+    #creating a transaction matrix with all the members
+    size = idx
+    transactions = [[0 for i in range(size)] for j in range(size)]
+
+    #updating transactions to already existing balaces between members of group
+    for member in member_list:
+        for dept in  member.depts_received.get(group = group.id)
+            from_member = member.id # this will give money
+            to_member = dept.from_member.id # this will recive money
+            transactions[user_id_to_idx_map[from_member]][user_id_to_idx_map[to_member]] = dept.amount
+
+    

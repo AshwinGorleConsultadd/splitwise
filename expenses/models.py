@@ -22,8 +22,6 @@ class ExpenseShare(models.Model):
 
     def _str_ (self):
         return f"{self.user.username} owes {self.owned_amount} for {self.expense.title}"
-
-
 class ExpensePayer(models.Model):
     expense = models.ForeignKey(Expense, related_name='payers', on_delete=models.CASCADE)
     user = models.ForeignKey('auth.User', related_name='expense_payers', on_delete=models.CASCADE)
