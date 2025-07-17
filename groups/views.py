@@ -102,3 +102,21 @@ def delete_group(request, group_id):
         return JsonResponse({"error": "Group not found"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+def join_group(request, group_id, user_id):
+    try:
+        group = Group.objects.get(id=group_id)
+        user = User.objects.get(id=user_id)
+        if not group or not user:
+            return JsonResponse({"message" : "group_id and user_id is required"},status=402)
+        membership = Membership.objects.create(group = group, member = user)
+        return JsonResponse({
+            "message" :  "membership created successfully!",
+            "membership" : {
+                "member" : user.id,
+                "group" : group.id
+            }
+        })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
