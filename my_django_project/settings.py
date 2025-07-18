@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'authapi',
     'expenses',
     'settlements'
-    
 ]
 
 MIDDLEWARE = [
