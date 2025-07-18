@@ -1,5 +1,7 @@
 
 from django.contrib.auth.models import User
+import heapq
+from django.shortcuts import get_object_or_404
 from groups.models import Group
 from .models import Expense
 import heapq
@@ -40,12 +42,15 @@ def validate_expense_request(expense):
         return f'Total shared amount ({total_shared_amount}) does not match total paid amount by payers ({total_paid_amount})'
     return 'pass'
     
-    #validate participants
+    
 
-
-
-import heapq
-from django.shortcuts import get_object_or_404
+def update_existing_depts(transactions,member_list,user_id_to_idx_map):
+    for member in member_list:
+        debts = member.depts_received.filter(group=group)
+        for debt in debts:
+            from_member = debt.from_member.id
+            to_member = member.id
+            transactions[user_id_to_idx_map[from_member]][user_id_to_idx_map[to_member]] = debt.amount
 
 def split_expense(expense):
     print("Splitting expense for", expense)
@@ -112,4 +117,4 @@ def split_expense(expense):
     for row in transactions:
         print(' '.join(str(value) for value in row))
 
-    print("done")
+    return transactions

@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.p~  # backup files
+*.log
+
+# Django
+*.sqlite3
+db.sqlite3
+*.pot
+*.pyc
+*.mo
+*.log
+*.pid
+*.seed
+*.env
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Virtual Environments
+env/
+venv/
+ENV/
+VENV/
+.venv/
+
+# Static files
+staticfiles/
+static/
+media/
+
+# Migrations
+**/migrations/
+**/migrations/*.pyc
+**/migrations/__pycache__/
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+coverage.xml
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# pytest
+.pytest_cache/
+.cache/
+
+# JetBrains
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# pipenv
+Pipfile.lock
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# Others
+local_settings.py
+secrets.json
