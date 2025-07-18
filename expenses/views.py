@@ -5,6 +5,8 @@ from .utils import validate_expense_request, split_expense
 from django.contrib.auth.models import User
 from .models import Expense, ExpenseShare, ExpensePayer
 from groups.models import Group
+from settlements.views import minimize_cashflow
+from settlements.views import settle_group_debts
 import json
 
 # Create your views here.
@@ -18,11 +20,11 @@ def expenses_view(request):
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
 def create_expense(request):
-    # expense = json.loads(request.body)
-    expense = Expense.objects.get(id=7)
-    print("expense : ",expense)
-    split_expense(expense)
-    return JsonResponse({"message" : "expense created successfully"},status=201)
+    try:
+        expense = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
     #validate request body
     validation_result = validate_expense_request(expense)
     if validation_result != 'pass':
@@ -62,6 +64,18 @@ def create_expense(request):
         )
 
     
+     # expense = json.loads(request.body)
+    #expense = Expense.objects.get(id=7)
+    print("expense : ",new_expense)
+    # dividing expenses amoung participants along with previous debts
+    transactions = split_expense(new_expense)
+    #minimizing cash flow
+    minimized_transactions = minimize_cashflow(transactions)
+    # settling debts in the group
+    settle_group_debts(expense=new_expense, minimized_transactions=minimized_transactions)
+    print('group settlement done')
+
+    return JsonResponse({"message" : "expense created successfully"},status=201)
 
     print('request body:', expense)
     return JsonResponse({"message" : "expense created successfully"},status=201)
