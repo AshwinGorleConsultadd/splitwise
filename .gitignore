@@ -6,7 +6,7 @@ __pycache__/
 *.pyc
 *.p~  # backup files
 *.log
-
+*.pyc
 # Django
 *.sqlite3
 db.sqlite3
