@@ -4,6 +4,7 @@ import heapq
 from django.shortcuts import get_object_or_404
 from groups.models import Group
 from .models import Expense
+
 import heapq
 
 def validate_expense_request(expense):
@@ -38,13 +39,13 @@ def validate_expense_request(expense):
     
     # Validate share amount against total expense amount
     total_shared_amount = sum([user['share_amount'] for user in expense['participants']])
-    if total_expense_amount != total_shared_amount:
+    if abs(total_expense_amount - total_shared_amount) > 2:
         return f'Total shared amount ({total_shared_amount}) does not match total paid amount by payers ({total_paid_amount})'
     return 'pass'
     
     
 
-def update_existing_depts(transactions,member_list,user_id_to_idx_map):
+def update_existing_depts(transactions,member_list,user_id_to_idx_map,group):
     for member in member_list:
         debts = member.depts_received.filter(group=group)
         for debt in debts:
@@ -54,7 +55,6 @@ def update_existing_depts(transactions,member_list,user_id_to_idx_map):
 
 def split_expense(expense):
     print("Splitting expense for", expense)
-
     group = get_object_or_404(Group, id=expense.group.id)
     memberships = group.membership.all()
     member_list = sorted([membership.member for membership in memberships], key=lambda user: user.id)
@@ -67,12 +67,7 @@ def split_expense(expense):
     transactions = [[0 for _ in range(size)] for _ in range(size)]
 
     # Updating transactions from existing debts (safe access with .filter instead of .get)
-    for member in member_list:
-        debts = member.depts_received.filter(group=group)
-        for debt in debts:
-            from_member = debt.from_member.id
-            to_member = member.id
-            transactions[user_id_to_idx_map[from_member]][user_id_to_idx_map[to_member]] = debt.amount
+    update_existing_depts(transactions=transactions, member_list=member_list, user_id_to_idx_map=user_id_to_idx_map, group=group)
 
     # Updating transactions as per the current expense share
     expense_shares = sorted(expense.shares.all(), key=lambda share: share.user.id)

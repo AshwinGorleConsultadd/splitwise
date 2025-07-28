@@ -9,7 +9,6 @@ from expenses.models import Expense
 from groups.models import Group
 
 def settle_group_debts(group , minimized_transactions):
-
     # Creating mapping from user ID to index
     # group = expense.group
     memberships = group.membership.all()
@@ -81,9 +80,6 @@ def minimize_cashflow(transactions):
         print(' '.join(str(value) for value in row))
 
     return minimized_transactions
-
-
-
 
 
 def split_expense_bulk(expenses):

@@ -80,11 +80,11 @@ def create_expense(request):
 
     #create expense
     print('creating new expense')
-    gorup = Group.objects.get(id=expense['group'])
+    group = Group.objects.get(id=expense['group'])
     new_expense = Expense.objects.create(
         title=expense['title'],
         amount=expense['amount'],
-        group=gorup,
+        group=group,
     )
 
     #create expense shares
@@ -110,14 +110,7 @@ def create_expense(request):
             user = user,
             paid_amount = paid_amount
         )
-
-    print("expense : ",new_expense)
-    # dividing expenses amoung participants along with previous debts
-    transactions = split_expense(new_expense)
-    #minimizing cash flow
-    minimized_transactions = minimize_cashflow(transactions)
-    # settling debts in the groupno
-    settle_group_debts(group=new_expense.group, minimized_transactions=minimized_transactions)
+    recalculate_group_debts(group)
     print('group settlement done')
 
     return JsonResponse({"message" : "expense created successfully"},status=201)
